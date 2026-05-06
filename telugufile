@@ -1,0 +1,29 @@
+class TeluguStructuralAnalyzer:
+    def __init__(self, text):
+        self.doc = nlp(text)
+
+    def get_structural_health(self):
+        # Extract specific parts of speech
+        nouns = [word.text for sent in self.doc.sentences for word in sent.words if word.upos in ['NOUN', 'PROPN']]
+        verbs = [word.text for sent in self.doc.sentences for word in sent.words if word.upos == 'VERB']
+        
+        # Calculate ratio (Nouns / Verbs)
+        # We add 1 to verbs to avoid division by zero
+        ratio = len(nouns) / (len(verbs) if len(verbs) > 0 else 1)
+        
+        return {
+            "nouns": nouns,
+            "verbs": verbs,
+            "noun_verb_ratio": round(ratio, 2),
+            "status": "Action-Oriented" if len(verbs) > len(nouns) else "Object-Focused"
+        }
+
+# Test with your Telugu text
+analyzer = TeluguStructuralAnalyzer(telugu_text)
+report = analyzer.get_structural_health()
+
+print("--- Telugu Structural Health ---")
+print(f"Nouns Detected: {report['nouns']}")
+print(f"Verbs Detected: {report['verbs']}")
+print(f"Ratio:          {report['noun_verb_ratio']} (Lower is usually more 'fluid')")
+print(f"Classification: {report['status']}")
